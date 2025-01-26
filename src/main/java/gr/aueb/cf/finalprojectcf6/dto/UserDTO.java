@@ -2,10 +2,12 @@ package gr.aueb.cf.finalprojectcf6.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class UserInsertDTO {
+@Getter
+@Setter
+public class UserDTO {
 
     @NotNull
     private String username;

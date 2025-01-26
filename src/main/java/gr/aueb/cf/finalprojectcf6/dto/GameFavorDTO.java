@@ -1,9 +1,11 @@
 package gr.aueb.cf.finalprojectcf6.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class BoardGameFavorDTO {
+@Getter
+@Setter
+public class GameFavorDTO {
 
     private Long userId;
 

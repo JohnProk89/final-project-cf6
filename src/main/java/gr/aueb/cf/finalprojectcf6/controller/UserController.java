@@ -1,12 +1,14 @@
 package gr.aueb.cf.finalprojectcf6.controller;
 
-import gr.aueb.cf.finalprojectcf6.dto.BoardGameFavorDTO;
-import gr.aueb.cf.finalprojectcf6.dto.UserInsertDTO;
+import gr.aueb.cf.finalprojectcf6.dto.GameFavorDTO;
+import gr.aueb.cf.finalprojectcf6.dto.UserDTO;
 import gr.aueb.cf.finalprojectcf6.model.User;
 import gr.aueb.cf.finalprojectcf6.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
@@ -16,22 +18,28 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserInsertDTO> registerUser(@RequestBody UserInsertDTO userInsertDTO) {
-        System.out.println("Registering user: " + userInsertDTO);
-        UserInsertDTO savedUser = userService.registerUser(userInsertDTO);
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
+        System.out.println("Registering user: " + userDTO);
+        UserDTO savedUser = userService.registerUser(userDTO);
         return ResponseEntity.ok(savedUser);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<String> getUser(@PathVariable Long id) {
-        String presentedUser = userService.showUser(id);
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User presentedUser = userService.findById(id);
         return ResponseEntity.ok(presentedUser);
     }
 
+    @GetMapping("/get/all")
+    public ResponseEntity<Set<User>> getAllUsers() {
+        Set<User> users = userService.showUsers();
+        return ResponseEntity.ok(users);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserInsertDTO userInsertDTO) {
-        System.out.println("Logging user: " + userInsertDTO);
-        String greeting = "Hello " + userService.loginUser(userInsertDTO).getUsername() + "!";
+    public ResponseEntity<String> loginUser(@RequestBody UserDTO userDTO) {
+        System.out.println("Logging user: " + userDTO);
+        String greeting = "Hello " + userService.loginUser(userDTO).getUsername() + "!";
         return ResponseEntity.ok(greeting);
     }
 
@@ -42,17 +50,17 @@ public class UserController {
         return ResponseEntity.ok("User updated");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestBody User user) {
-        System.out.println("Deleting user: " + user);
-        userService.deleteUser(user);
-        return ResponseEntity.ok("User deleted");
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        System.out.println("Deleting user: " + id);
+        String username = userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted: " + username);
     }
 
     @PostMapping("/favorgame")
-    public ResponseEntity<String> addFavouriteGame(@RequestBody BoardGameFavorDTO boardGameFavorDTO) {
-        System.out.println("Adding favourite game: " + boardGameFavorDTO + " to a user, but which one?");
-        userService.favorGame(boardGameFavorDTO);
+    public ResponseEntity<String> addFavouriteGame(@RequestBody GameFavorDTO gameFavorDTO) {
+        System.out.println("Adding favourite game: " + gameFavorDTO + " to a user, but which one?");
+        userService.favorGame(gameFavorDTO);
         return ResponseEntity.ok("ok");
     }
 }

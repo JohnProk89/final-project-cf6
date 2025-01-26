@@ -1,14 +1,16 @@
 package gr.aueb.cf.finalprojectcf6.service;
 
-import gr.aueb.cf.finalprojectcf6.dto.BoardGameFavorDTO;
-import gr.aueb.cf.finalprojectcf6.dto.UserInsertDTO;
-import gr.aueb.cf.finalprojectcf6.model.BoardGame;
+import gr.aueb.cf.finalprojectcf6.dto.GameFavorDTO;
+import gr.aueb.cf.finalprojectcf6.dto.UserDTO;
+import gr.aueb.cf.finalprojectcf6.model.Game;
 import gr.aueb.cf.finalprojectcf6.model.User;
-import gr.aueb.cf.finalprojectcf6.repository.BoardGameRepository;
+import gr.aueb.cf.finalprojectcf6.repository.GameRepository;
 import gr.aueb.cf.finalprojectcf6.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,26 +19,33 @@ import java.util.Set;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BoardGameRepository boardGameRepository;
+    private final GameRepository gameRepository;
 
-    public UserInsertDTO registerUser(UserInsertDTO userInsertDTO) {
-            User user = mapUserInsertDTOToUser(userInsertDTO);
+    public UserDTO registerUser(UserDTO userDTO) {
+            User user = mapUserInsertDTOToUser(userDTO);
             userRepository.save(user);
-            return userInsertDTO;
+            return userDTO;
     }
 
-    public String showUser(Long userId) {
+    public User findById(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
-            return "user not found";
+            return new User();
         }
-        return optionalUser.get().getUsername();
+        return optionalUser.get();
     }
 
-    public UserInsertDTO loginUser(UserInsertDTO userInsertDTO) {
-        User user = mapUserInsertDTOToUser(userInsertDTO);
+    public Set<User> showUsers() {
+        Set<User> users = new HashSet<>();
+        users.addAll(userRepository.findAll());
+        System.out.println("size" + users.size());
+        return users;
+    }
+
+    public UserDTO loginUser(UserDTO userDTO) {
+        User user = mapUserInsertDTOToUser(userDTO);
         userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-        return userInsertDTO;
+        return userDTO;
     }
 
     public User updateUser(User user) {
@@ -44,32 +53,34 @@ public class UserService {
         return user;
     }
 
-    public User deleteUser(User user) {
-        userRepository.delete(user);
-        return user;
+    public String deleteUser(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            return "user not found";
+        }
+        userRepository.delete(optionalUser.get());
+        return optionalUser.get().getUsername();
     }
 
-    public void favorGame(BoardGameFavorDTO boardGameFavorDTO) {
-        Optional<User> userOptional = userRepository.findById(boardGameFavorDTO.getUserId());
+    @Transactional
+    public void favorGame(GameFavorDTO gameFavorDTO) {
+        Optional<User> userOptional = userRepository.findById(gameFavorDTO.getUserId());
         if (userOptional.isEmpty()) {
             return;
         }
         User user = userOptional.get();
-        Optional<BoardGame> boardGameOptional = boardGameRepository.findById(boardGameFavorDTO.getGameId());
-        if (boardGameOptional.isEmpty()) {
+        Optional<Game> gameOptional = gameRepository.findById(gameFavorDTO.getGameId());
+        if (gameOptional.isEmpty()) {
             return;
         }
-        BoardGame boardGame = boardGameOptional.get();
-        Set<BoardGame> favouriteGames = user.getFavouriteGames();
-        favouriteGames.add(boardGame);
-        user.setFavouriteGames(favouriteGames);
-        userRepository.save(user);
+        Game game = gameOptional.get();
+        user.getFavouriteGames().add(game);
     }
 
-    public User mapUserInsertDTOToUser(UserInsertDTO userInsertDTO) {
+    public User mapUserInsertDTOToUser(UserDTO userDTO) {
         User user = new User();
-        user.setUsername(userInsertDTO.getUsername());
-        user.setPassword(userInsertDTO.getPassword());
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(userDTO.getPassword());
         return user;
     }
 }
