@@ -23,7 +23,7 @@ public class Game {
     @Column(unique = true, nullable = false)
     private String description;
 
-    @ManyToMany(mappedBy = "favouriteGames")
-    @JsonIgnore
-    Set<User> users;
+//    @ManyToMany(mappedBy = "favouriteGames")
+//    @JsonIgnore
+//    Set<User> users;
 }

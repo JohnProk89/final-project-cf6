@@ -10,9 +10,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +35,8 @@ public class UserService {
         return optionalUser.get();
     }
 
-    public Set<User> showUsers() {
-        Set<User> users = new HashSet<>();
+    public List<User> showUsers() {
+        List<User> users = new ArrayList<>();
         users.addAll(userRepository.findAll());
         System.out.println("size" + users.size());
         return users;
@@ -77,7 +77,7 @@ public class UserService {
             return;
         }
         Game game = gameOptional.get();
-        user.getFavouriteGames().add(game);
+//        user.getFavouriteGames().add(game);
     }
 
     public User mapUserDTOToUser(UserDTO userDTO) {

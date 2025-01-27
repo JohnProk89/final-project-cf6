@@ -6,9 +6,11 @@ import gr.aueb.cf.finalprojectcf6.model.User;
 import gr.aueb.cf.finalprojectcf6.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -16,6 +18,21 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<User> authenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User currentUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(currentUser);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<User>> allUsers() {
+        List <User> users = userService.showUsers();
+        return ResponseEntity.ok(users);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
@@ -31,8 +48,8 @@ public class UserController {
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<Set<User>> getAllUsers() {
-        Set<User> users = userService.showUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.showUsers();
         return ResponseEntity.ok(users);
     }
 

@@ -3,18 +3,17 @@ package gr.aueb.cf.finalprojectcf6.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
-public class User /*implements UserDetails*/ {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +25,8 @@ public class User /*implements UserDetails*/ {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany
-    Set<Game> favouriteGames;
-
-    /*
-    * development stopped and branched to auth branch at this point...
+//    @ManyToMany
+//    Set<Game> favouriteGames;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -39,22 +35,21 @@ public class User /*implements UserDetails*/ {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
-    */
 }
