@@ -26,7 +26,7 @@ public class User /*implements UserDetails*/ {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     Set<Game> favouriteGames;
 
     /*
