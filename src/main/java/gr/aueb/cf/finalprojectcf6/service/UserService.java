@@ -52,8 +52,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     public String deleteUser(Long id) {

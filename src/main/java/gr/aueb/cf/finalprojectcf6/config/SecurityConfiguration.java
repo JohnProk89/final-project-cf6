@@ -6,14 +6,11 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +30,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/auth/**")
+                        .requestMatchers("/auth/**").permitAll()
                         //.requestMatchers("/user/register").permitAll()
 //                        .requestMatchers("/user/login").permitAll()
 //                        .requestMatchers("/user/update").hasAnyAuthority(Role.PLAYER.name())
@@ -45,28 +42,26 @@ public class SecurityConfiguration {
 //                        .requestMatchers("/game/get/{id}").hasAnyAuthority(Role.SUPER_ADMIN.name())
 //                        .requestMatchers("/game/get/all").hasAnyAuthority(Role.SUPER_ADMIN.name())
 //                        .requestMatchers("/game/update").hasAnyAuthority(Role.SUPER_ADMIN.name())
-//                        .requestMatchers("/game/delete/").hasAnyAuthority(Role.SUPER_ADMIN.name())
-                        .permitAll()
+//                        .requestMatchers("/game/delete/").hasAnyAuthority(Role.SUPER_ADMIN.name()
+//                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                         .anyRequest()
                         .authenticated())
+                .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of("http://localhost"));
-        configuration.setAllowedMethods(List.of("GET","POST"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**",configuration);
-
-        return source;
-    }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of("http://localhost"));
+//        configuration.setAllowedMethods(List.of("GET","POST"));
+//        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**",configuration);
+//        return source;
+//    }
 }
