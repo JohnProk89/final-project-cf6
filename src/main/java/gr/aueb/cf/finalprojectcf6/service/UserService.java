@@ -22,7 +22,7 @@ public class UserService {
     private final GameRepository gameRepository;
 
     public UserDTO registerUser(UserDTO userDTO) {
-            User user = mapUserInsertDTOToUser(userDTO);
+            User user = mapUserDTOToUser(userDTO);
             userRepository.save(user);
             return userDTO;
     }
@@ -43,9 +43,12 @@ public class UserService {
     }
 
     public UserDTO loginUser(UserDTO userDTO) {
-        User user = mapUserInsertDTOToUser(userDTO);
-        userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-        return userDTO;
+        User user = mapUserDTOToUser(userDTO);
+        Optional<User> loggedUser = userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        if (loggedUser.isPresent()) {
+            return mapUserToUserDTO(loggedUser.get());
+        }
+        return null;
     }
 
     public User updateUser(User user) {
@@ -77,10 +80,17 @@ public class UserService {
         user.getFavouriteGames().add(game);
     }
 
-    public User mapUserInsertDTOToUser(UserDTO userDTO) {
+    public User mapUserDTOToUser(UserDTO userDTO) {
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
         return user;
+    }
+
+    public UserDTO mapUserToUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(user.getUsername());
+        userDTO.setPassword(user.getPassword());
+        return userDTO;
     }
 }

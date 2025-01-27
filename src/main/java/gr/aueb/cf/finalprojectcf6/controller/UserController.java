@@ -39,8 +39,11 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDTO userDTO) {
         System.out.println("Logging user: " + userDTO);
-        String greeting = "Hello " + userService.loginUser(userDTO).getUsername() + "!";
-        return ResponseEntity.ok(greeting);
+        UserDTO loggedUser = userService.loginUser(userDTO);
+        if (loggedUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok("greetings: " + loggedUser.getUsername());
     }
 
     @PostMapping("/update")
