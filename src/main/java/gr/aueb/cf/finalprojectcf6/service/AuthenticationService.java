@@ -1,6 +1,5 @@
 package gr.aueb.cf.finalprojectcf6.service;
 
-
 import gr.aueb.cf.finalprojectcf6.dto.UserDTO;
 import gr.aueb.cf.finalprojectcf6.model.User;
 import gr.aueb.cf.finalprojectcf6.repository.UserRepository;
@@ -12,9 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(
@@ -41,7 +38,6 @@ public class AuthenticationService {
                         input.getPassword()
                 )
         );
-
         return userRepository.findByUsername(input.getUsername())
                 .orElseThrow();
     }
