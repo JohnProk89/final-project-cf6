@@ -7,10 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
@@ -24,7 +27,13 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
-    @GetMapping("/")
+    @GetMapping
+    public String allUsers(Model model) {
+        model.addAttribute("users", userService.showUsers());
+        return "viewUsers";
+    }
+
+    @GetMapping("/postman")
     public ResponseEntity<List<User>> allUsers() {
         List <User> users = userService.showUsers();
         return ResponseEntity.ok(users);
@@ -52,8 +61,7 @@ public class UserController {
 
 //    @PostMapping("/register")
 //    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
-//        System.out.println("Registering user:
-//        " + userDTO);
+//        System.out.println("Registering user: " + userDTO);
 //        UserDTO savedUser = userService.registerUser(userDTO);
 //        return ResponseEntity.ok(savedUser);
 //    }
